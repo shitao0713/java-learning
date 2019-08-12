@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="WARN" monitorInterval="1800">
+
+    <properties>
+        <property name="LOG_HOME">/data/app/logs/biz/</property>
+        <property name="LOG_FILE_NAME">analysis</property>
+    </properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+            <ThresholdFilter level="Debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </Console>
+
+        <RollingRandomAccessFile name="dataAnalysisLog" fileName="${LOG_HOME}/${LOG_FILE_NAME}.log"
+                                 filePattern="${LOG_HOME}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>
+
+    </Appenders>
+
+    <Loggers>
+        <!-- 使用log4j2的混合异步 AsyncLogger方法, 全局异步需要在JVM添加变量:
+        -Dog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector-->
+        <AsyncLogger name="org.springframework" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="dataAnalysisLog"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="com.mysql.cj" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="dataAnalysisLog"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="com.example.learn.analysis" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="dataAnalysisLog"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="org.apache.ibatis" level="debug" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="dataAnalysisLog"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="com.zaxxer.hikari" level="debug" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="dataAnalysisLog"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="org.apache.kakfa" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="dataAnalysisLog"/>
+        </AsyncLogger>
+        <AsyncLogger name="org.springframework.kakfa" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="dataAnalysisLog"/>
+        </AsyncLogger>
+
+        <!-- 日志输出级别 -->
+        <root level="info" includeLocation="true">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="dataAnalysisLog"/>
+        </root>
+    </Loggers>
+</Configuration>
